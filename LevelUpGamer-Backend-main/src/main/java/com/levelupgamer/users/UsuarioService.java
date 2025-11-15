@@ -28,7 +28,6 @@ public class UsuarioService {
         if (usuarioRepository.existsByRun(dto.getRun())) {
             throw new UserAlreadyExistsException("RUN ya registrado");
         }
-        // Hashear contraseña
         Usuario usuario = UsuarioMapper.toEntity(dto);
         usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
         usuario.setRol(RolUsuario.CLIENTE);
@@ -39,7 +38,6 @@ public class UsuarioService {
             usuario.setIsDuocUser(true);
         }
 
-        // Asignar puntos al referido si existe
         if (dto.getCodigoReferido() != null && !dto.getCodigoReferido().isEmpty()) {
             usuarioRepository.findByCodigoReferido(dto.getCodigoReferido())
                 .ifPresent(referrer -> {
@@ -64,7 +62,6 @@ public class UsuarioService {
         usuario.setRegion(dto.getRegion());
         usuario.setComuna(dto.getComuna());
         usuario.setDireccion(dto.getDireccion());
-        // No se permite cambiar run, correo ni fechaNacimiento ni rol por seguridad
         usuarioRepository.save(usuario);
         return UsuarioMapper.toDTO(usuario);
     }

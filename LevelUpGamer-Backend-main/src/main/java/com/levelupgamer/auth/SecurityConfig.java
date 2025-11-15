@@ -3,6 +3,7 @@ package com.levelupgamer.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +29,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/blog-posts/**", "/api/contact-messages/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/products/{productoId}/reviews").authenticated()
                         .requestMatchers("/api/orders/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR", "CLIENTE")
                         .requestMatchers("/api/users/roles").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/users/**").authenticated()

@@ -22,6 +22,5 @@ public class ProductoDTO {
     private String categoria;
     private String imagenUrl;
     private Boolean activo;
-    // Getters y setters
-    // ...
+
 }

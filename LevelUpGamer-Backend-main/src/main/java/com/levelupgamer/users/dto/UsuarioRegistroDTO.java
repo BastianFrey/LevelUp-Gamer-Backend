@@ -43,6 +43,5 @@ public class UsuarioRegistroDTO {
     @NotNull
     private String direccion;
     private String codigoReferido;
-    // Getters y setters
-    // ...
+
 }

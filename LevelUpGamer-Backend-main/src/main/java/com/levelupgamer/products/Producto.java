@@ -1,5 +1,7 @@
 package com.levelupgamer.products;
 
+import com.levelupgamer.reviews.Resena;
+import java.util.Set;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -11,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +22,7 @@ import lombok.Builder;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "productos")
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,10 +60,8 @@ public class Producto {
 
     private String imagenUrl;
 
-    // Soft delete
     private Boolean activo = true;
 
-    // Auditoría
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -66,5 +69,9 @@ public class Producto {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // Getters y setters omitidos por brevedad
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Resena> resenas;
+
 }

@@ -21,6 +21,5 @@ public class UsuarioRespuestaDTO {
     private Integer puntosLevelUp;
     private String codigoReferido;
     private String rol;
-    // Getters y setters
-    // ...
+
 }

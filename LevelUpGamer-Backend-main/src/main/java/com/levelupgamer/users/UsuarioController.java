@@ -27,7 +27,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    // Endpoint de ejemplo para obtener usuario por id (protegido en seguridad)
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioRespuestaDTO> getUsuario(@PathVariable Long id) {
         return usuarioService.buscarPorId(id)
@@ -42,7 +41,6 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizarUsuario(id, dto));
     }
 
-    // Endpoint para obtener roles (solo admin)
     @GetMapping("/roles")
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.ok(RolUsuario.values());

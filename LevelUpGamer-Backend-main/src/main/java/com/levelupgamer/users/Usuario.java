@@ -1,5 +1,8 @@
 package com.levelupgamer.users;
 
+import com.levelupgamer.reviews.Resena;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
@@ -20,6 +23,7 @@ import lombok.Builder;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +52,7 @@ public class Usuario {
 
     @Column(nullable = false, length = 100)
     @NotNull
-    @Size(min = 4, max = 10)
+    @Size(min = 4, max = 100)
     private String contrasena;
 
     @Column(nullable = false)
@@ -76,12 +80,17 @@ public class Usuario {
     private Boolean isDuocUser = false;
 
     @OneToMany(mappedBy = "usuario")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<Pedido> pedidos;
 
-    // Soft delete
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Resena> resenas;
+
     private Boolean activo = true;
 
-    // Auditoría
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -89,5 +98,4 @@ public class Usuario {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // Getters y setters omitidos por brevedad
 }
