@@ -22,7 +22,6 @@ import lombok.ToString;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "productos")
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

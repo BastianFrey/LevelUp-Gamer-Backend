@@ -23,7 +23,6 @@ import lombok.Builder;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
