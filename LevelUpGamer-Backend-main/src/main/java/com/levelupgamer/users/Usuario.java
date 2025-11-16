@@ -28,9 +28,9 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 9)
+    @Column(nullable = false, unique = true, length = 10)
     @NotNull
-    @Size(min = 7, max = 9)
+    @Size(min = 7, max = 10)
     private String run;
 
     @Column(nullable = false, length = 50)
