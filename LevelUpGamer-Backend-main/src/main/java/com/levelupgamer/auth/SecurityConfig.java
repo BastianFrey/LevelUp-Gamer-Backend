@@ -32,13 +32,27 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Rutas públicas (Login, Registro, Blog, Swagger)
                         .requestMatchers("/api/auth/**", "/api/users/register", "/api/blog-posts/**", "/api/contact-messages/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+
+                        // PRODUCTOS:
+                        // Ver productos es público
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                        // Crear, editar o borrar productos es solo para ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMINISTRADOR")
+
+                        // REVIEWS y ORDENES
                         .requestMatchers(HttpMethod.POST, "/api/products/{productoId}/reviews").authenticated()
                         .requestMatchers("/api/orders/**").hasAnyRole("ADMINISTRADOR", "VENDEDOR", "CLIENTE")
+
+                        // USUARIOS y PUNTOS
                         .requestMatchers("/api/users/roles").hasRole("ADMINISTRADOR")
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/points/**").authenticated()
+
+                        // Resto bloqueado si no estás logueado
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
