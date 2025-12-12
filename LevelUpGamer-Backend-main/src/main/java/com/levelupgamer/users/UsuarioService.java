@@ -34,7 +34,7 @@ public class UsuarioService {
         usuario.setPuntosLevelUp(0);
         usuario.setActivo(true);
         String correo = dto.getCorreo().toLowerCase();
-        if (correo.endsWith("@duoc.cl") || correo.endsWith("@profesor.duoc.cl")) {
+        if (correo.endsWith("@admin.cl") || correo.endsWith("@profesor.admin.cl")) {
             usuario.setIsDuocUser(true);
         }
 
