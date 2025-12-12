@@ -27,13 +27,13 @@ public class ProductoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','VENDEDOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('VENDEDOR')")
     @PostMapping
     public ResponseEntity<ProductoDTO> crearProducto(@Valid @RequestBody Producto producto) {
         return ResponseEntity.ok(productoService.crearProducto(producto));
     }
 
-    @PreAuthorize("hasAnyRole('ADMINISTRADOR','VENDEDOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR') or hasAuthority('VENDEDOR')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductoDTO> actualizarProducto(@PathVariable Long id, @Valid @RequestBody Producto producto) {
         return productoService.actualizarProducto(id, producto)
@@ -42,7 +42,7 @@ public class ProductoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable Long id) {
         if (productoService.eliminarProducto(id)) {
