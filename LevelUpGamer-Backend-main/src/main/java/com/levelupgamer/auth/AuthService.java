@@ -5,7 +5,6 @@ import com.levelupgamer.users.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class AuthService {
     private final UsuarioRepository usuarioRepository;
@@ -19,13 +18,28 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
+        // Limpiamos espacios
         String correoLimpio = loginRequest.getCorreo().trim();
+        String passwordPlana = loginRequest.getContrasena().trim();
 
+        // Buscamos usuario
         Usuario usuario = usuarioRepository.findByCorreo(correoLimpio)
-                .orElseThrow(() -> new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {});
+                .orElseThrow(() -> new org.springframework.security.core.AuthenticationException("Usuario no encontrado: " + correoLimpio) {});
 
-        if (!passwordEncoder.matches(loginRequest.getContrasena().trim(), usuario.getContrasena())) {
-            throw new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {};
+        // --- ZONA DE DEBUG (MIRA LA CONSOLA AL PROBAR) ---
+        System.out.println("================= DEBUG LOGIN =================");
+        System.out.println("1. Correo: " + correoLimpio);
+        System.out.println("2. Pass Ingresada (Plana): " + passwordPlana);
+        System.out.println("3. Hash en Base de Datos : " + usuario.getContrasena());
+        System.out.println("4. Largo del Hash en BD  : " + usuario.getContrasena().length());
+
+        boolean coinciden = passwordEncoder.matches(passwordPlana, usuario.getContrasena());
+        System.out.println("5. ¿COINCIDEN?           : " + coinciden);
+        System.out.println("===============================================");
+        // ----------------------------------------------------
+
+        if (!coinciden) {
+            throw new org.springframework.security.core.AuthenticationException("Contraseña incorrecta") {};
         }
 
         String token = jwtProvider.generateToken(usuario);
