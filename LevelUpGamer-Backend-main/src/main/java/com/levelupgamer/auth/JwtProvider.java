@@ -9,7 +9,8 @@ import java.util.Date;
 
 @Component
 public class JwtProvider {
-    private final String jwtSecret = "levelupgamerSecretKey123!";
+    private final String jwtSecret = "EstaClaveEsSuperSeguraYLoSuficientementeLargaParaSoportarElAlgoritmoHS512SinProblemasEnLevelUpGamer2025_Exito";
+
     private final long jwtExpirationMs = 86400000; // 1 día
 
     public String generateToken(Usuario usuario) {
@@ -36,4 +37,3 @@ public class JwtProvider {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
 }
-
