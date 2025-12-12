@@ -2,11 +2,9 @@ package com.levelupgamer.auth;
 
 import com.levelupgamer.users.Usuario;
 import com.levelupgamer.users.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Service
 public class AuthService {
@@ -21,17 +19,20 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        Usuario usuario = usuarioRepository.findByCorreo(loginRequest.getCorreo())
-            .orElseThrow(() -> new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {});
-        if (!passwordEncoder.matches(loginRequest.getContrasena(), usuario.getContrasena())) {
+        String correoLimpio = loginRequest.getCorreo().trim();
+
+        Usuario usuario = usuarioRepository.findByCorreo(correoLimpio)
+                .orElseThrow(() -> new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {});
+
+        if (!passwordEncoder.matches(loginRequest.getContrasena().trim(), usuario.getContrasena())) {
             throw new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {};
         }
+
         String token = jwtProvider.generateToken(usuario);
         return LoginResponse.builder()
-            .token(token)
-            .rol(usuario.getRol())
-            .usuarioId(usuario.getId())
-            .build();
+                .token(token)
+                .rol(usuario.getRol())
+                .usuarioId(usuario.getId())
+                .build();
     }
 }
-
