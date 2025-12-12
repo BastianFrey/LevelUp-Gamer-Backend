@@ -18,30 +18,35 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
-        // Limpiamos espacios
-        String correoLimpio = loginRequest.getCorreo().trim();
-        String passwordPlana = loginRequest.getContrasena().trim();
+        // 1. OBTENER DATOS Y LIMPIAR
+        // Usamos trim() para espacios y toLowerCase() por si el celular puso Mayúsculas
+        String correoIngresado = loginRequest.getCorreo().trim();
 
-        // Buscamos usuario
-        Usuario usuario = usuarioRepository.findByCorreo(correoLimpio)
-                .orElseThrow(() -> new org.springframework.security.core.AuthenticationException("Usuario no encontrado: " + correoLimpio) {});
+        // --- DEBUG VISIBLE (Ahora sí saldrá en consola) ---
+        System.out.println("====== INTENTO DE LOGIN ======");
+        System.out.println("Correo recibido del celular: '" + loginRequest.getCorreo() + "'");
+        System.out.println("Correo que usaremos para buscar: '" + correoIngresado + "'");
+        // --------------------------------------------------
 
-        // --- ZONA DE DEBUG (MIRA LA CONSOLA AL PROBAR) ---
-        System.out.println("================= DEBUG LOGIN =================");
-        System.out.println("1. Correo: " + correoLimpio);
-        System.out.println("2. Pass Ingresada (Plana): " + passwordPlana);
-        System.out.println("3. Hash en Base de Datos : " + usuario.getContrasena());
-        System.out.println("4. Largo del Hash en BD  : " + usuario.getContrasena().length());
+        // 2. BUSCAR USUARIO
+        // NOTA: Si esto falla, el error es que el correo NO existe en la BD
+        // o se guardó con mayúsculas/minúsculas diferentes.
+        Usuario usuario = usuarioRepository.findByCorreo(correoIngresado)
+                .orElseThrow(() -> {
+                    System.out.println("❌ ERROR: El correo no fue encontrado en la Base de Datos.");
+                    return new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {};
+                });
 
-        boolean coinciden = passwordEncoder.matches(passwordPlana, usuario.getContrasena());
-        System.out.println("5. ¿COINCIDEN?           : " + coinciden);
-        System.out.println("===============================================");
-        // ----------------------------------------------------
+        System.out.println("✅ Usuario encontrado: " + usuario.getCorreo());
+        System.out.println("Hash en BD: " + usuario.getContrasena());
 
-        if (!coinciden) {
-            throw new org.springframework.security.core.AuthenticationException("Contraseña incorrecta") {};
+        // 3. VERIFICAR CONTRASEÑA
+        if (!passwordEncoder.matches(loginRequest.getContrasena().trim(), usuario.getContrasena())) {
+            System.out.println("❌ ERROR: La contraseña no coincide con el hash.");
+            throw new org.springframework.security.core.AuthenticationException("Usuario o contraseña inválidos") {};
         }
 
+        // 4. GENERAR TOKEN
         String token = jwtProvider.generateToken(usuario);
         return LoginResponse.builder()
                 .token(token)
