@@ -22,28 +22,48 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioRespuestaDTO registrarUsuario(UsuarioRegistroDTO dto) {
+        // 1. Validaciones previas
         if (usuarioRepository.existsByCorreo(dto.getCorreo())) {
             throw new UserAlreadyExistsException("Correo ya registrado");
         }
         if (usuarioRepository.existsByRun(dto.getRun())) {
             throw new UserAlreadyExistsException("RUN ya registrado");
         }
+
+        // 2. Mapeo inicial
         Usuario usuario = UsuarioMapper.toEntity(dto);
         usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
-        usuario.setRol(RolUsuario.CLIENTE);
+
+        // 3. Lógica de Roles según el dominio del correo
+        String correoLower = dto.getCorreo().toLowerCase(); // Convertimos a minúsculas para comparar seguro
+
+        if (correoLower.endsWith("@admin.cl")) {
+            usuario.setRol(RolUsuario.ADMINISTRADOR);
+        } else if (correoLower.endsWith("@gmail.com")) {
+            usuario.setRol(RolUsuario.VENDEDOR);
+        } else if (correoLower.endsWith("@duocuc.cl")) {
+            usuario.setRol(RolUsuario.CLIENTE);
+        } else {
+            // Por defecto para cualquier otro correo
+            usuario.setRol(RolUsuario.CLIENTE);
+        }
+
+        // 4. Configuración adicional
         usuario.setPuntosLevelUp(0);
         usuario.setActivo(true);
-        String correo = dto.getCorreo().toLowerCase();
-        if (correo.endsWith("@admin.cl") || correo.endsWith("@profesor.admin.cl")) {
+
+        // Mantengo tu lógica de DuocUser por si la usas para descuentos u otra cosa
+        if (correoLower.endsWith("@admin.cl") || correoLower.endsWith("@profesor.admin.cl")) {
             usuario.setIsDuocUser(true);
         }
 
+        // 5. Lógica de Referidos
         if (dto.getCodigoReferido() != null && !dto.getCodigoReferido().isEmpty()) {
             usuarioRepository.findByCodigoReferido(dto.getCodigoReferido())
-                .ifPresent(referrer -> {
-                    referrer.setPuntosLevelUp(referrer.getPuntosLevelUp() + REFERRAL_POINTS);
-                    usuarioRepository.save(referrer);
-                });
+                    .ifPresent(referrer -> {
+                        referrer.setPuntosLevelUp(referrer.getPuntosLevelUp() + REFERRAL_POINTS);
+                        usuarioRepository.save(referrer);
+                    });
         }
 
         usuarioRepository.save(usuario);
