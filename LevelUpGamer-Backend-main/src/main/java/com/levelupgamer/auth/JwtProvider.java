@@ -9,7 +9,9 @@ import java.util.Date;
 
 @Component
 public class JwtProvider {
-    private final String jwtSecret = "EstaClaveEsSuperSeguraYLoSuficientementeLargaParaSoportarElAlgoritmoHS512SinProblemasEnLevelUpGamer2025_Exito";
+    // ⚠️ CAMBIO FINAL: Esta es una clave Base64 válida y segura de 512 bits.
+    // No la modifiques ni le agregues espacios.
+    private final String jwtSecret = "KbW9sX9kL4pQ3rV7tZ2nC6xJ8mH1dG5fB0yA3wE7uS2oI4vR9lK5jM8nN1bV6cX0zQ2wE4rT7yU3iO9pL5kJ8hG2fD1sA0mX";
 
     private final long jwtExpirationMs = 86400000; // 1 día
 
